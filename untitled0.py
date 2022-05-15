@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May  6 19:41:50 2022
-
-@author: kiril
-"""
-
-
-# -*- coding: utf-8 -*-
 
 from numpy import (sin, cos, tan, pi, exp, sqrt, arange, meshgrid, linspace)
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -17,7 +8,7 @@ from sys import exit
 import os
 from tkinter import *
 
-LARGE_FONT = ("Archangelsk Regular", 14, "bold", "italic")
+
 
 def onScale(tim):
     global time
@@ -41,8 +32,8 @@ def get(entry):
     except ValueError:
         return None
  
+h = 0.01
 
-    #def Ex(x, y, z, kappaX, kappaY, kappa hh, t):
 class TE():
     def Ex(x, y, z, kappaX, kappaY, kappa, w, hh, t):
         return ((-w*(kappaY/kappa**2)) * cos(kappaX * x) * sin(kappaY * y)*sin(w*t-h*z))#==0 if kappaY==0
@@ -100,18 +91,18 @@ def plotting():
     if (len(frequincy.get()) == 0) or (len(a_x_size_entry.get()) == 0) or (len(b_x_size_entry.get()) == 0) or (
             len(table_n.get()) == 0) or (len(table_m.get()) == 0):
         clf()
-        label.configure(text="Заполните поля!", bg="#1A1A1D", fg="#bbbbbf")
-        label.place(relx=.19, rely=.75, anchor="c", height=50, width=450)
+        label.configure(text="Заполните поля!", bg="DarkOrange3", fg="black")
+        label.place(x=25,y=600)
         gcf().canvas.draw()
         return
     label.configure(text=" ")
 
-    cc = 3e10  # ñêîðîñòü ñâåòà
+    cc = 3e10
     ff = get(frequincy)
-    f = ff * 1e9  # ÷àñòîòó ïåðåâîäèì â Ãö
+    f = ff * 1e9
     w = 2 * pi * f
-    lyam = cc / f  # ðàçìåð âîëíîâîäà ïî îñè z
-    hh = w / cc  # âîëíîâîå ÷èñëî
+    lyam = cc / f
+    hh = w / cc
     n = get(table_n)
     m = get(table_m)
     a = get(a_x_size_entry)
@@ -119,18 +110,16 @@ def plotting():
     tt = time
     t = tt / 1e12
     c = lyam
-    h = 0.01  # øàã ñåòêè
     k = get(size_lines_entry)
     kappa = sqrt(((pi * n / a) ** 2) + ((pi * m / b) ** 2))
     kappaX = pi * n / a
     kappaY = pi * m / b
-    f_kr = (cc * kappa) / (2 * pi)  # êðèòè÷åñêàÿ ÷àñòîòà
+    f_kr = (cc * kappa) / (2 * pi)
     lyam_kr = cc / f_kr
 
     def V_gr():
         return cc * sqrt(1 - pow(lyam / lyam_kr, 2))
 
-    # îïðåäåëèì ñðåç
     C1 = 0
     C2 = 0
     if n != 0 and m == 0:
@@ -212,7 +201,7 @@ def plotting():
     def TM_E_YZ(y, z):
         return (abs(cos(kappaY * y))) * cos(w * t*2 - hh * z+0.5)  
     
-    # Ñòðîèì ãðàôèêè çäåñü
+
     def makeData(b1, b2):
         a1 = arange(0, b1, h)
         a2 = arange(0, b2, h)
@@ -244,87 +233,42 @@ def plotting():
             elif n != 0 and m == 0:
                 XY.contour(x1, y1, TE10_H_XY(y1, 0), linspace(-1, 1, k), colors='b')
             elif n == 0 and m != 0:
-                #XY.contour(x1, y1, TE01_H_XY(0, x1), linspace(-1, 1, k), colors='b')
-#=================================================================================================================================================================================================================================                
+       
                 YZEx=TE.Ex01(x=x[0][1], y=y[:,1,:], z=z[:,1,:], kappaY=kappaY, c=c, w=w, hh=hh, t=t)
                 YZEy=TE.Ey01(x=x[0][1], y=y[:,1,:], z=z[:,1,:], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)
-                #YZEz=0*YZEy
                 YZ.set_ylim(0,b+h)
                 
-                #if abs(YZEx).max()==0 and abs(YZEy).max()!=0 :
-                   #lwyze=(YZEy**2+YZEz**2)**0.5/(abs(YZEy).max()**2+abs(YZEz).max()**2)**0.5                 
-                   # YZ.streamplot(z[:,1,:],y[:,1,:],YZEz,YZEy,linewidth=lwyze)
-
-                #if abs(YZEy).max()==0 :
                 for i in range(0,len(y[:,0,0])-1,4):
                     for j in range(0,len(z[0,0,:]),5) :
                         if TE.Ex01(x=x[0,1,0], y=y[i,0,0], z=z[0,0,j], kappaY=kappaY, c=c, w=w, hh=hh, t=t)>0:
                             mark="o"
                         else:
                                mark="x"
-                               s = 40 * (abs(TE.Ex01(x=x[0,1,0], y=y[i,0,0], z=z[0,0,j], kappaY=kappaY, c=c, w=w, hh=hh, t=t)) / abs(YZEx).max())
+                               s = 0.8*(abs(TE.Ex01(x=x[0,1,0], y=y[i,0,0], z=z[0,0,j], kappaY=kappaY, c=c, w=w, hh=hh, t=t)) / abs(YZEx).max())
                                YZ.scatter(z[0,0,j], y[i,0,0], s=s, c="r", marker=mark)
-                #else:
-                #    for i in range(0,len(y[:,0,0])-1,4):
-                 #       for j in range(0,len(z[0,0,:]),5) :
-                  #          if TE.Ex01(x=x[0,1,0], y=y[i,0,0], z=z[0,0,j], kappaY=kappaY, c=c, w=w, hh=hh, t=t)>0:
-                  #              mark="o"
-                   #         else:
-                   #             mark="x"
-                            #YZ.scatter(z[0,0,j],y[i,0,0],s=40*(abs(TE.Ex01(x=x[0,1,0], kappaY=kappaY, c=c, w=w, hh=hh, t=t))/abs(YZEx).max()),c="r", marker=mark)
-
-                    #lwyze=(YZEy**2+YZEz**2)**0.5/(abs(YZEy).max()**2+abs(YZEz).max()**2)**0.5
-                    #YZ.streamplot(z[:,1,:],y[:,1,:],YZEz,YZEy,linewidth=1)               
+                 
                 YZ.set_xlabel('Z')
                 YZ.set_ylabel('У')
                 
-                #H
                 YZHy=TE.Hy01(x=x[0][1], y=y[:,1,:], z=z[:,1,:], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)
                 YZHz=TE.Hz(x=x[0][1], y=y[:,1,:], z=z[:,1,:], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)                
-                #XY
-                #E
+
                 XYEx=TE.Ex01(x=x[:,:,0], y=y[:,:,0], z=z[0][0][1], kappaY=kappaY, c=c, w=w, hh=hh, t=t)
                 XYEy=TE.Ey(x=x[:,:,0], y=y[:,:,0], z=z[0][0][1], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)
-                #H
+
                 XYHx=TE.Hx(x=x[:,:,0], y=y[:,:,0], z=z[0][0][1], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)
                 XYHy=TE.Hy01(x=x[:,:,0], y=y[:,:,0], z=z[0][0][1], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)
 
-                #XZ
-                #E
                 XZEx=TE.Ex01(x=x[1,:,:], y=y[1,0,0], z=z[1,:,:], kappaY=kappaY, c=c, w=w, hh=hh, t=t)
-                #XZEy=TE.Ey(x=x[1,:,:], y=y[1,0,0], z=z[1,:,:], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)
                 XZEz=0*XZEx
                 XZ.set_ylim(0,a+h)
-                #if abs(XZEx).max()!=0 :
+
                 lwxze=(XZEx**2+XZEz**2)**0.5/(abs(XZEx).max()**2+abs(XZEz).max()**2)**0.5                    
                 XZ.streamplot(z[0,:,:],x[0,:,:],XZEz,XZEx,linewidth=lwxze)
 
-                #elif abs(XZEx).max()==0 :
-                    #for i in range(0,len(x[0,:,0]),5):
-                        #for j in range(0,len(z[0,0,:]),5) :
-                            #if TE.Ey(x=x[0,i,0], y=y[0,0,0], z=z[0,0,j], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)>0:
-                                #mark="o"
-                            #else:
-                                #mark="x"
-                            #s=40*(abs(TE.Ey(x=x[0,i,0], y=y[0,0,0], z=z[0,0,j], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t))/abs(XZEy).max())
-                            #XZ.scatter(z[0,0,j],x[0,i,0], s=s ,c="r", marker=mark)
-
-                #else:
-                    #for i in range(0,len(x[0,:,0]),5):
-                        #for j in range(0,len(z[0,0,:]),5) :
-                            #if TE.Ey(x=x[0,i,0], y=y[0,0,0], z=z[0,0,j], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)>0:
-                                #mark="o"
-                            #else:
-                                #mark="x"
-                            #XZ.scatter(z[0,0,j],x[0,i,0],s=40*(abs(TE.Ey(x=x[0,i,0], y=y[0,0,0], z=z[0,0,j], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t))/abs(XZEy).max()), c="r", marker=mark)#, label='Ey')
-                    #lwxze=(XZEx**2+XZEz**2)**0.5/(abs(XZEx).max()**2+abs(XZEz).max()**2)**0.5                    
-                    #XZ.streamplot(z[0,:,:],x[0,:,:],XZEz,XZEx,linewidth=lwxze)
                 XZ.set_xlabel('Z')
                 XZ.set_ylabel('X')
-                #H
-                
-                
-                 #XY
+
                 lwxye=(XYEx**2+XYEy**2)**0.5/abs(XYEx).max()
                 XY.streamplot(x[:,:,0],y[:,:,0],XYEx,XYEy,linewidth=lwxye)
                 XY.set_xlabel('Х')
@@ -337,21 +281,11 @@ def plotting():
                 XY.set_xlabel('Х')
                 XY.set_ylabel('У')
                 
-                #YZ
-                #lwyzh=(YZHy**2+YZHz**2)**0.5/(abs(YZHy).max()**2+abs(YZHz).max()**2)**0.5 
                 YZ.streamplot(z[:,1,:],y[:,1,:],YZHz,YZHy,linewidth=1)
                 YZ.set_xlabel('Z')
                 YZ.set_ylabel('У')
                 
-                #XZ
-                #XZHx=TE.Hx(x=x[0,:,:], y=y[0,0,0], z=z[0,:,:], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)
-                #XZHy=TE.Hy(x=x[0,:,:], y=y[0,0,0], z=z[0,:,:], kappaX=kappaX, kappaY=kappaX, kappa=kappa, w=w, hh=hh, t=t)
-                #XZHz=TE.Hz(x=x[0,:,:], y=y[0,0,0], z=z[0,:,:], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)
-                #lwxzh=(XZHx**2+XZHz**2)**0.5/(abs(XZHx).max()**2+abs(XZHz).max()**2)**0.5
-                #XZ.streamplot(z[0,:,:],x[0,:,:],XZHz,XZHx,linewidth=lwxzh)
-                #XZ.set_xlabel('Z')
-                #XZ.set_ylabel('X')
-#=================================================================================================================================================================================================================================               
+            
             elif m==0 and n==0:
                 raise Exception("m не может быть равным 0  одновременно с n равным 0")
             XY.set_xlabel('x')
@@ -361,9 +295,7 @@ def plotting():
                 XY.contour(x1, y1, TE_E_XY(x1, y1), linspace(-1, 1, k), colors='r')
             elif n != 0 and m == 0:
                 XY.contour(x1, y1, TE10_E_XY(x1, y1), linspace(-1, 2, k), colors='r')
-                # YZ.contour(x1, y1, TE10_E_XY(x1, y1), linspace(-1, 1, k), colors='r')
-            #elif n == 0 and m != 0:
-               # XY.contour(x1, y1, TE01_E_XY(x1, y1), linspace(-1, 1, k), colors='r')
+
             XY.set_xlabel('x')
             XY.set_ylabel('y')
 
@@ -374,8 +306,7 @@ def plotting():
                 YZ.contour(z2, y2, TE10_E_YZ_pos(z2, y2), linspace(-1, 1, k), colors='r')
                 YZ.contour(z2, y2, TE10_E_YZ_neg(z2, y2), linspace(-1, 1, k), colors='r')
                 
-            #elif n == 0 and m != 0:
-               # YZ.contour(z2, y2, TE01_H_YZ(y2, z2), linspace(-1, 1, k), colors='b')
+
             YZ.set_xlabel('z')
             YZ.set_ylabel('y')
 
@@ -383,9 +314,7 @@ def plotting():
                 XZ.contour(z3, x3, TE_H_XZ(x3, z3), linspace(-1, 1, k), colors='b')
             elif n != 0 and m == 0:
                 XZ.contour(z3, x3, TE10_H_XZ(x3, z3), linspace(-1, 1, k), colors='b')
-            #elif n == 0 and m != 0:
-                #XZ.contour(z3, x3, TE01_H_XY(0, z3), linspace(-1, 1, k), colors='b')
-                #XZ.contour(z3, x3, TE01_E_XZ(x3, 0), linspace(-1, 1, k), colors='r')
+
             XZ.set_xlabel('z')
             XZ.set_ylabel('x')
 
@@ -395,15 +324,11 @@ def plotting():
                 XY.contour(x1, y1, TM_H_XY(x1, y1), linspace(-1, 1, k), colors='b')
                 XY.set_xlabel('x')
                 XY.set_ylabel('y')
-
-                #XY.contour(x1, y1, TM_E_XY(x1, y1), linspace(-1, 1, k), colors='r')
-                #=============================================================================================                
+             
                 XYEx=TM.Ex(x=x[:,:,0], y=y[:,:,0], z=z[0][0][1], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)
                 XYEy=TM.Ey(x=x[:,:,0], y=y[:,:,0], z=z[0][0][1], kappaX=kappaX, kappaY=kappaY, kappa=kappa, w=w, hh=hh, t=t)
-                #XYEz=TM.Ez(x=x[:,:,0], y=y[:,:,0], z=z[0][0][1], kappaX=kappaX, kappaY=kappaX, hh=hh, t=t)
                 lwxye=(XYEx**2+XYEy**2)**0.5/(abs(XYEx).max()**2+abs(XYEy).max()**2)**0.5
                 XY.streamplot(x[:,:,0],y[:,:,0],XYEx,XYEy, linewidth=lwxye, color='r')                
-                #=============================================================================================
                 XY.set_xlabel('x')
                 XY.set_ylabel('y')
 
@@ -419,113 +344,103 @@ def plotting():
                 XZ.set_xlabel('z')
                 XZ.set_ylabel('x')
             else:
-                label = Label(window, text="Не распространяется!!!", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-                label.grid(row=16, column=0, sticky=W, padx=30)
+                label = Label(window, text="Не распространяется!!!", font= ("rany",16), bg="DarkOrange3", fg="black")
+                label.place(x=25,y=600)
                 gcf().canvas.draw()
 
 
     else:
-        label = Label(window, text="Частота ниже критической!", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-        label.grid(row=15, column=0, sticky=W, padx=30)
+        label = Label(window, text="Частота ниже критической!", font= ("rany",16), bg="DarkOrange3", fg="black")
+        label.place(x=25,y=600)
     subplots_adjust(wspace=0.5, hspace=0.5)
     gcf().canvas.draw()
-    w_label = Label(window, text="Критическая частота(ГГц): ", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-    w_label.grid(row=14, column=0, sticky=W, padx=30)
-    wk_label = Label(window, text=f_kr / 1e9, bg="#1A1A1D", fg="#bbbbbf", font=LARGE_FONT)
-    wk_label.place(relx=.28, rely=.588, anchor="c")
+    w_label = Label(window, text="Критическая частота(ГГц): ", font= ("rany",16), bg="DarkOrange3", fg="black")
+    w_label.place(x=25,y=550)
+    wk_label = Label(window, text=f_kr / 1e9, font= ("rany",16), bg="DarkOrange3", fg="black")
+    wk_label.place(x=300,y=550)
 
 
 window = Tk()
-window.title()
+window.title("Volnovod")
 window.protocol("WM_DELETE", EXIT)
 window.attributes("-alpha", 1)
 window.state("normal")
 window.resizable(width=True, height=True)
-window['bg'] = '#1A1A1D'
-window.title("Volnovodka")
-w = 1850
-h = 1080
-sw = window.winfo_screenwidth()
-sh = window.winfo_screenheight()
+window['bg'] = 'DarkOrange3'
+window.geometry('1200x600')
 
 
-label_n = Label(window, text="Выберите тип волны:", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-label_n.grid(row=0, column=0, padx=30, sticky=W)
+
+
+label_n = Label(window, text="Выберите тип волны:", font= ("rany",16), bg="DarkOrange3", fg="black")
+label_n.place(x=25,y=25)
 
 style = Style()
-style.configure("BW.TLabel", font=LARGE_FONT, foreground="#bbbbbf", background="#4E4E50")
-combobox = Combobox(value=["TE", "TM"], height=2, width=3, state="readonly", font=LARGE_FONT, style="BW.TLabel")
+style.configure("BW.TLabel", font=("rany",16), foreground="black", background="DarkOrange3")
+combobox = Combobox(value=["TE", "TM"], height=2, width=3, state="readonly", font=("rany",16), style="BW.TLabel")
 combobox.set("TE")
-combobox.grid(row=0, column=3)
-window.option_add("*TCombobox*Listbox*Background", '#4E4E50')
-window.option_add("*TCombobox*Listbox*Foreground", '#1A1A1D')
+combobox.place(x=400,y=25)
+window.option_add("*TCombobox*Listbox*Background", 'DarkOrange3')
+window.option_add("*TCombobox*Listbox*Foreground", 'black')
 
+moda_label = Label(window, text="Выберите моду:", font=("rany",16), bg="DarkOrange3", fg="black")
+moda_label.place(x=25,y=75)
 
-moda_label = Label(window, text="Выберите моду:", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-moda_label.grid(row=2, column=0, columnspan=4, padx=30, sticky=SW)
-
-label_m = Label(window, text="m: ", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-label_m.grid(row=3, column=2)
-table_m = Entry(window, width=5, bg="#4E4E50", selectbackground='black', font=LARGE_FONT, fg="#bbbbbf", validate="key")
+label_m = Label(window, text="m: ", font=("rany",16), bg="DarkOrange3", fg="black")
+label_m.place(x=375,y=125)
+table_m = Entry(window, width=5, bg="DarkOrange3", selectbackground='DarkOrange3', font=("rany",16), fg="black", validate="key")
 table_m['validatecommand'] = (table_m.register(testVal), '%P', '%d')
-table_m.grid(row=3, column=3)
+table_m.place(x=400,y=125)
 
-label_n = Label(window, text="n: ", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-label_n.grid(row=2, column=2, padx=10)
-table_n = Entry(window, width=5, bg="#4E4E50", selectbackground='#bbbbbf', font=LARGE_FONT, fg="#bbbbbf", validate="key")
+label_n = Label(window, text="n: ", font=("rany",16), bg="DarkOrange3", fg="black")
+label_n.place(x=375,y=75)
+table_n = Entry(window, width=5, bg="DarkOrange3", selectbackground='DarkOrange3', font=("rany",16), fg="black", validate="key")
 table_n['validatecommand'] = (table_n.register(testVal), '%P', '%d')
-table_n.grid(row=2, column=3)
+table_n.place(x=400,y=75)
 
-
-label_m = Label(window, text="Введите частоту(ГГц): ", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-label_m.grid(row=5, column=0, padx=30, sticky=W)
-
-frequincy = Entry(window, width=5, bg="#4E4E50", selectbackground='black', font=LARGE_FONT, fg="#bbbbbf", validate="key")
+label_m = Label(window, text="Введите частоту(ГГц): ", font=("rany",16), bg="DarkOrange3", fg="black")
+label_m.place(x=25,y=175)
+frequincy = Entry(window, width=5, bg="DarkOrange3", selectbackground='DarkOrange3', font=("rany",16), fg="black", validate="key")
 frequincy['validatecommand'] = (frequincy.register(testVal), '%P', '%d')
-frequincy.grid(row=5, column=3)
+frequincy.place(x=400,y=175)
 
+waveguide_size = Label(window, text="Введите размер волновода (см):", font=("rany",16), bg="DarkOrange3", fg="black")
+waveguide_size.place(x=25,y=225)
 
-
-waveguide_size = Label(window, text="Введите размер волновода (см):", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-waveguide_size.grid(row=7, column=0, columnspan=4, padx=30, sticky=W)
-
-a_x_size = Label(window, text="a: ", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-a_x_size.grid(row=7, column=2, padx=30, sticky=NE)
-a_x_size_entry = Entry(window, width=5, bg="#4E4E50", font=LARGE_FONT, selectbackground='#1A1A1D', fg="#bbbbbf", validate="key")
+a_x_size = Label(window, text="a: ", font=("rany",16), bg="DarkOrange3", fg="black")
+a_x_size.place(x=375,y=225)
+a_x_size_entry = Entry(window, width=5, bg="DarkOrange3", selectbackground='DarkOrange3', font=("rany",16), fg="black", validate="key")
 a_x_size_entry['validatecommand'] = (a_x_size_entry.register(testVal), '%P', '%d')
-a_x_size_entry.grid(row=7, column=3)
+a_x_size_entry.place(x=400,y=225)
 
-b_x_size = Label(window, text="b: ", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-b_x_size.grid(row=8, column=2, padx=30, sticky=NE)
-b_x_size_entry = Entry(window, width=5, bg="#4E4E50", font=LARGE_FONT, selectbackground='#1A1A1D', fg="#bbbbbf", validate="key")
+b_x_size = Label(window, text="b: ", font=("rany",16), bg="DarkOrange3", fg="black")
+b_x_size.place(x=375,y=275)
+b_x_size_entry = Entry(window, width=5, bg="DarkOrange3", selectbackground='DarkOrange3', font=("rany",16), fg="black", validate="key")
 b_x_size_entry['validatecommand'] = (b_x_size_entry.register(testVal), '%P', '%d')
-b_x_size_entry.grid(row=8, column=3)
+b_x_size_entry.place(x=400,y=275)
 
-
-size_lines = Label(window, text="Количество линей уровня: ", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-size_lines.grid(row=10, column=0, columnspan=2, padx=30, pady=10, sticky=SW)
-size_lines_entry = Entry(window, width=5, bg="#4E4E50", font=LARGE_FONT, selectbackground='#1A1A1D', fg="#bbbbbf", validate="key")
+size_lines = Label(window, text="Количество линей уровня: ", font=("rany",16), bg="DarkOrange3", fg="black")
+size_lines.place(x=25,y=325)
+size_lines_entry = Entry(window, width=5, bg="DarkOrange3", selectbackground='DarkOrange3', font=("rany",16), fg="black", validate="key")
 size_lines_entry['validatecommand'] = (size_lines_entry.register(testVal), '%P', '%d')
-size_lines_entry.grid(row=10, column=3)
+size_lines_entry.place(x=400,y=325)
 
-
-label = Label(window, text=" ", font=LARGE_FONT, bg="#1A1A1D")
-label.grid(row=11, column=14, columnspan=17, padx=10, sticky=S + N)
+label = Label(window, text=" ", font=("rany",16), bg="DarkOrange3")
+label.place(x=25,y=550)
 time = 0
-label_time = Label(window, text="Время: ", font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf")
-label_time.grid(row=12, column=0, columnspan=1, padx=30, pady=15, sticky=SW)
-time_label = Label(window, text=time, font=LARGE_FONT, bg="#1A1A1D", fg="#1A1A1D")
-time_label.grid(row=122, column=122, columnspan=122, padx=1000, pady=1000, sticky=SW)
+label_time = Label(window, text="Время: ", font=("rany",16), bg="DarkOrange3", fg="black")
+label_time.place(x=25,y=375)
+time_label = Label(window, text=time, font=("rany",16), bg="DarkOrange3", fg="black")
+time_label.place(x=400,y=375)
 
-scale = Scale(window, orient="horizontal", from_=0, to=25,  font=LARGE_FONT, bg="#1A1A1D", fg="#bbbbbf", command=onScale)
+scale = Scale(window, orient="horizontal", from_=0, to=25,  font=("rany",16), bg="DarkOrange3", fg="black", command=onScale)
 label_time_entry = scale
-scale.place(relx=.227, rely=.48, anchor="c", height=50, width=300)
+scale.place(x=315,y=400, anchor="c", height=50, width=300)
 
+click = Button(window, text="Построить графики силовых линий", font=("rany",16), bg="DarkOrange3", fg="black", command=plotting)
+click.place(x=240,y=500, anchor="c", height=50, width=450)
 
-click = Button(window, text="Построить графики силовых линий", bg="#1A1A1D", fg="#bbbbbf", font=LARGE_FONT, command=plotting)
-click.place(relx=.19, rely=.7, anchor="c", height=50, width=450)
-
-label_color = Label(window, text="H-синий, E-красный", anchor="n", font=LARGE_FONT,  bg="#4e4e52", fg="#bbbbbf",)
+label_color = Label(window, text="H-синий, E-красный", anchor="n", font=("rany",16), bg="DarkOrange3", fg="black")
 label_color.place(relx=.7, rely=.5, anchor="c", height=800, width=700, bordermode=OUTSIDE)
 
 window.mainloop()
